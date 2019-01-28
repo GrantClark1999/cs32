@@ -1,0 +1,42 @@
+#include "student.h"
+#include "studentRoll.h"
+
+#include <iostream>
+#include "tddFuncs.h"
+using namespace std;
+
+int main() {
+  cout << "Running tests from: " << __FILE__ << endl;
+
+  const char * const name1="One One";
+  const char * const name2="Two Two";
+  const char * const name3="Tre Tre";
+  
+  Student s1(name1,1111111);
+  Student s2(name2,2222222);
+  Student s3(name3,3333333);
+
+  StudentRoll sr0;
+  cout << "Initialized sr0" << endl;
+  StudentRoll sr1(sr0);
+  cout << "Copied sr0 to sr1" << endl;
+  sr1.insertAtTail(s1);
+  cout << "Inserted s1 into sr1" << endl;
+  StudentRoll sr2(sr1); // ERROR HERE
+  cout << "Copied sr1 to sr2" << endl;
+  sr2.insertAtTail(s2);
+  cout << "Inserted s2 into sr2" << endl;
+  StudentRoll sr3;
+  cout << "Initialized sr3" << endl;
+  sr3 = sr2;
+  cout << "= operator Called" << endl;
+  sr3.insertAtTail(s3);
+
+  ASSERT_EQUALS("[]",sr0.toString()); 
+  ASSERT_EQUALS("[[One One,1111111]]",sr1.toString()); 
+  ASSERT_EQUALS("[[One One,1111111],[Two Two,2222222]]",sr2.toString());
+  ASSERT_EQUALS("[[One One,1111111],[Two Two,2222222],[Tre Tre,3333333]]",sr3.toString()); 
+
+  return 0;
+}
+

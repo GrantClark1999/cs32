@@ -1,0 +1,11 @@
+# Makefile
+
+CXX=g++
+
+# Note: F1.h and F2.h are NOT required, but can list them to make sure
+# that the files exist.
+main: main.o F1.o F2.o
+	${CXX} -o main -std=c++11 main.o
+
+clean:
+	rm -f *.o main

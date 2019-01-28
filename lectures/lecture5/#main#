@@ -1,0 +1,7 @@
+#include <iostream>
+
+void search(const int a[], size_t first, size_t size, int target,
+bool &found, size_t &location) {
+     size_t middle;
+     
+}

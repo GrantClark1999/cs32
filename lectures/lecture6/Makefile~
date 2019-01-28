@@ -1,0 +1,9 @@
+# Makefile
+
+CXX=g++
+
+unordered_map:
+	${CXX} -o unordered_map unordered_map.o
+
+clean:
+	rm -f *.o unordered_map
