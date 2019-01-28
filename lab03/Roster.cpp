@@ -95,11 +95,7 @@ std::string Roster::toString() const {
 
 void Roster::sortByPerm() {
   // SELECTION SORT
-  int largestIndex;
-  int largestPerm;
   for(int i = numStudents - 1; i > 0; i--) {
-    largestIndex = 0;
-    largestPerm = students[0]->getPerm();
     sortByPermHelper(i);
   }
 }
