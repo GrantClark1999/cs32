@@ -2,12 +2,16 @@
 
 using namespace std;
 
+// For Quicksort, the only advantage of using this sorting method versus
+// Mergesort, is that Quicksort does NOT require an additional buffer space.
+
 void partition(int a[], size_t size, size_t& pivotIndex) {
 	int pivot = a[0];		 // choose 1st value for pivot
 	size_t left = 1;		 // index just right of pivot
 	size_t right = size - 1; // last item in array
 	int temp;
 
+	// terminates when left > right
 	while (left <= right) {
 		// increment left if <= pivot
 		while (left < size && a[left] <= pivot) {
