@@ -8,3 +8,6 @@ DEPENDENCIES= tabledemo.cpp table.cpp entry.cpp
 
 all:
 	${CXX} ${FLAGS} -o tabledemo ${DEPENDENCIES}
+
+clean:
+	rm -f tabledemo
