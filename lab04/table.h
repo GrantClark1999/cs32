@@ -7,6 +7,7 @@
 #define table_h
 
 #include "entry.h"
+#include <iostream>
 #include <vector>
 
 typedef std::vector<Entry> EntryVec;

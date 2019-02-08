@@ -2,7 +2,18 @@
 
 #include "table.h"
 
-#include <iostream>
+void printTable(const Table& t) {
+    for(unsigned int i = 0; i < t.size; i++) {
+        EntryVec e = t.entries[i];
+        std::cout << i << ": ";
+        EntryVec::iterator it = e.begin();
+        while(it != e.end()) {
+            std::cout << *it << "\t|\t";
+            it++;
+        }
+        std::cout << std::endl;
+    }
+}
 
 Table::Table(unsigned int max_entries) {
     size = max_entries;
@@ -50,7 +61,8 @@ std::string Table::get(unsigned int key) const{
 }
 
 bool Table::remove(unsigned int key){
-    EntryVec e = entries[hash(key)];
+    unsigned int hashedKey = hash(key);
+    EntryVec e = entries[hashedKey];
     EntryVec::iterator it = find(key, e);
     if(it != e.end()) {
         e.erase(it);
