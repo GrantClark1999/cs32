@@ -2,19 +2,6 @@
 
 #include "table.h"
 
-void printTable(const Table& t) {
-    for(unsigned int i = 0; i < t.size; i++) {
-        EntryVec e = t.entries[i];
-        std::cout << i << ": ";
-        EntryVec::iterator it = e.begin();
-        while(it != e.end()) {
-            std::cout << *it << "\t|\t";
-            it++;
-        }
-        std::cout << std::endl;
-    }
-}
-
 Table::Table(unsigned int max_entries) {
     size = max_entries;
     // Assigns the dynamically allocated array to be a new array of EntryVec (std::vector<Entry>)
@@ -28,8 +15,14 @@ Table::Table(unsigned int entries, std::istream& input){
     while(!input.eof()) {
         std::getline(input, inputString);
         keyString = inputString.substr(0, inputString.find("\t"));
-        dataString = inputString.substr(inputString.find("\t"), inputString.length()-1);
-        put(std::stoi(keyString), dataString);
+        dataString = inputString.substr(inputString.find("\t")+1, inputString.length()-1);
+        try {
+            unsigned int key = std::stoi(keyString);
+            put(key, dataString);
+        } catch(std::invalid_argument) {
+            // Don't do anything.
+            // Skip over blank lines.
+        }
     }
 }
 
@@ -50,10 +43,10 @@ void Table::put(Entry e){
 
 std::string Table::get(unsigned int key) const{
     unsigned int hashedKey = hash(key);
-    EntryVec e = entries[hashedKey];
-    EntryVec::iterator it = find(key, e);
-    if(it != e.end()) {
-        return it->get_data();
+    EntryVec* e = &entries[hashedKey];
+    int pos = find(key, *e);
+    if(pos >= 0) {
+        return (e->begin() + pos)->get_data();
     }
     // Below executes if the key is not found.
     std::cerr << "Key: " << key << " not found.";
@@ -62,25 +55,23 @@ std::string Table::get(unsigned int key) const{
 
 bool Table::remove(unsigned int key){
     unsigned int hashedKey = hash(key);
-    EntryVec e = entries[hashedKey];
-    EntryVec::iterator it = find(key, e);
-    if(it != e.end()) {
-        e.erase(it);
+    EntryVec* e = &entries[hashedKey];
+    int pos = find(key, *e);
+    if(pos < 0) {
+        return false;
+    } else {
+        e->erase(e->begin() + pos);
         return true;
     }
-    return false;
 }
 
-EntryVec::iterator Table::find(unsigned int key, EntryVec e) const {
-    EntryVec::iterator it = e.begin();
-    while(it != e.end()) {
-        if(it->get_key() == key) {
-            return it;
-        } else {
-            it++;
+int Table::find(unsigned int key, EntryVec e) const {
+    for(unsigned int i = 0; i < e.size(); i++) {
+        if(e[i].get_key() == key) {
+            return i;
         }
     }
-    return e.end();
+    return -1;
 }
 
 unsigned int Table::hash(unsigned int key) const {

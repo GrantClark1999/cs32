@@ -22,11 +22,10 @@ public:
     void put(Entry e);
     std::string get(unsigned int key) const;
     bool remove(unsigned int key);
-    EntryVec::iterator find(unsigned int key, EntryVec e) const;
+    int find(unsigned int key, EntryVec e) const;
 
     // Non-Member Functions
     friend std::ostream& operator<< (std::ostream& out, const Table& t);
-    friend void printTable(const Table& t);
 private:
     unsigned int size = 0;
     // Dynamically allocated array storing vector objects.
