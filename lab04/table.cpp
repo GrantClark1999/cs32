@@ -54,6 +54,7 @@ bool Table::remove(unsigned int key){
     EntryVec::iterator it = find(key, e);
     if(it != e.end()) {
         e.erase(it);
+        return true;
     }
     return false;
 }
@@ -74,88 +75,44 @@ unsigned int Table::hash(unsigned int key) const {
     return (key%size);
 }
 
-// NOTE: TEMPORARY
-void printVector(EntryVec v) {
-    EntryVec::iterator it;
-    if(!v.empty()) {
-        it = v.begin();
-        while(it != v.end()) {
-            std::cout << *it << "\t | \t";
-            it++;
-        }
-    }
-}
-
-void printVector(ExtEntryVec v) {
-    ExtEntryVec::iterator it;
-    if(!v.empty()) {
-        it = v.begin();
-        while(it != v.end()) {
-            std::cout << *it << "\t | \t";
-            it++;
-        }
-    }
-}
-
-void printTable(const Table& t) {
-    for(unsigned int i = 0; i < t.size; i++) {
-        EntryVec e = t.entries[i];
-        std::cout << i << ": ";
-        printVector(e);
-        std::cout << std::endl;
-    }
-}
-// END OF TEMPORARY
-
 std::ostream& operator<< (std::ostream& out, const Table& t){
     // Vector storing objects of ExtEntry type. Will be a sorted vector (sorted by key) of the first elements of each
     // of the vectors containing Entry objects in EntryVec in Table. If the first element is erased from the vector, it
     // will try to add the next element from the original EntryVec that the erased element originated from.
     ExtEntryVec outVector;
-    // Stores the iterator pointing to the Entry object in the original EntryVec vector.
-    // EntryVec::iterator it;
-
-    // TEMPORARY
-    printTable(t);
 
     // Stores all first Entry objects into outVector (in sorted order)
     for(unsigned int i = 0; i < t.size; i++) {
         EntryVec e = t.entries[i];
         if(!e.empty()) {
-            EntryVec::iterator it = e.begin();
             // Entry object, iterator to the place in the original vector for the Entry object, hashedKey/index
-            ExtEntry extE(*(it), it, i);
+            ExtEntry extE(e[0], 0, i);
 
             ExtEntryVec::iterator extEntryIt = std::lower_bound(outVector.begin(), outVector.end(), extE);
             outVector.insert(extEntryIt, extE);
         }
     }
 
-    // TEMPORARY
-    printVector(outVector);
-
     // Loop continues until there are no more Entry objects in the original table that it hasn't printed out.
     while(!outVector.empty()) {
         // Gets the iterator to the original EntryVec for the object that will be erased from the temporary outVector.
-        EntryVec::iterator toErase = outVector[0].get_iterator();
-        EntryVec::iterator nextToInsert = toErase + 1;
+        unsigned int nextToInsert = outVector[0].get_origPos() + 1;
         unsigned int hashedKey = outVector[0].get_hashedKey();
+        EntryVec origVec = t.entries[hashedKey];
 
         // Writes the lowest key to the output.
-        out << outVector[0].get_entry() << std::endl;
+        Entry outEntry = outVector[0].get_entry();
+        out << outEntry << std::endl;
 
         outVector.erase(outVector.begin());
         EntryVec::iterator end = t.entries[hashedKey].end();
 
-        if(nextToInsert != end) {
-            ExtEntry extE(*(nextToInsert), nextToInsert, hashedKey);
+        if(nextToInsert != origVec.size()) {
+            ExtEntry extE(origVec[nextToInsert], nextToInsert, hashedKey);
 
             ExtEntryVec::iterator extEntryIt = std::lower_bound(outVector.begin(), outVector.end(), extE);
             outVector.insert(extEntryIt, extE);
         }
-
-        // TEMPORARY
-        printVector(outVector);
     }
 
     return out;
@@ -168,23 +125,23 @@ std::ostream& operator<< (std::ostream& out, const Table& t){
 
 
 
-ExtEntry::ExtEntry(Entry e, EntryVec::iterator it, unsigned int hKey) {
+ExtEntry::ExtEntry(Entry e, unsigned int oPos, unsigned int hKey) {
     entry = e;
-    iterator = it;
+    origPos = oPos;
     hashedKey = hKey;
 }
 
 ExtEntry::ExtEntry(const ExtEntry &e) {
     entry = e.get_entry();
-    iterator = e.get_iterator();
+    origPos = e.get_origPos();
     hashedKey = e.get_hashedKey();
 }
 
 Entry ExtEntry::get_entry() const {
     return entry;
 }
-EntryVec::iterator ExtEntry::get_iterator() const {
-    return iterator;
+unsigned int ExtEntry::get_origPos() const {
+    return origPos;
 }
 unsigned int ExtEntry::get_hashedKey() const {
     return hashedKey;
@@ -199,7 +156,7 @@ ExtEntry& ExtEntry::operator = (const ExtEntry &other) {
         return *this;
     }
     this->entry = other.get_entry();
-    this->iterator = other.get_iterator();
+    this->origPos = other.get_origPos();
     this->hashedKey = other.get_hashedKey();
     return *this;
 }

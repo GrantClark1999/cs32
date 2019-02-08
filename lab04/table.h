@@ -37,17 +37,17 @@ private:
 
 struct ExtEntry {
 public:
-    ExtEntry(Entry e, EntryVec::iterator it, unsigned int hashedKey);
+    ExtEntry(Entry e, unsigned int oPos, unsigned int hashedKey);
     ExtEntry(const ExtEntry &e);
     Entry get_entry() const;
-    EntryVec::iterator get_iterator() const;
+    unsigned int get_origPos() const;
     unsigned int get_hashedKey() const;
     // operator conversion function simplifies comparisons
     operator unsigned int () const;
     ExtEntry& operator = (const ExtEntry& other);
 private:
     Entry entry;
-    EntryVec::iterator iterator;
+    unsigned int origPos;
     unsigned int hashedKey;
 };
 
