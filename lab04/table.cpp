@@ -9,20 +9,28 @@ Table::Table(unsigned int max_entries) {
 }
 
 Table::Table(unsigned int entries, std::istream& input){
+    unsigned int currSize = 0;
     size = entries;
     this->entries = new EntryVec[size];
     std::string inputString, keyString, dataString;
-    while(!input.eof()) {
+    while(!input.eof() && currSize < size) {
+        Entry e;
+        input >> e;
+        put(e);
+        currSize++;
+        /*
         std::getline(input, inputString);
         keyString = inputString.substr(0, inputString.find("\t"));
         dataString = inputString.substr(inputString.find("\t")+1, inputString.length()-1);
         try {
             unsigned int key = std::stoi(keyString);
             put(key, dataString);
+            currSize++;
         } catch(std::invalid_argument) {
             // Don't do anything.
             // Skip over blank lines.
         }
+        */
     }
 }
 
@@ -47,10 +55,9 @@ std::string Table::get(unsigned int key) const{
     int pos = find(key, *e);
     if(pos >= 0) {
         return (e->begin() + pos)->get_data();
+    } else {
+        return "";
     }
-    // Below executes if the key is not found.
-    std::cerr << "Key: " << key << " not found.";
-    exit(1);
 }
 
 bool Table::remove(unsigned int key){

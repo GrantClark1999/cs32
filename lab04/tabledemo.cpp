@@ -51,7 +51,7 @@ int main() {
         cout << "No fips.txt in current directory. Quitting\n";
         return 1;
     }
-    Table t3(3142, input);
+    Table t3(1, input);
     cout << "Try getting some entries by FIPS code keys\n"
     << "(enter 0 key to quit)\n";
     while (user_get(t3) != 0)
