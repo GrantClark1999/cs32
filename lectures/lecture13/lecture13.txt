@@ -1,0 +1,67 @@
+Operating System: 
+    - A program that facilitates easy, efficient, fair, orderly, and secure use of software and hardware resources.
+    - Allows us as a programmer to just do "cout << "Hello World" << endl;" without needing to take care of resource management.
+    - Provides infrastructure for resource sharing in parallel processes.
+
+Kernal:
+    - A piece of software that is the "core" of the OS.
+    - Provides the interface between the application and the hardware.
+    - The kernal space contains programs that are used for resource management (like "ls" or "pwd").
+      This interacts with the hardware layer and typically cannot be changed by a user.
+
+Overview of UNIX (OS) Stack:
+                    Application                 \   Application
+                    Unix Shell                  /   Layer
+                       <----
+                        API
+                       ---->
+                    Kernal (OS)                 -   API
+                    Device Drivers
+                    Hardware
+                    Physics
+
+Process:
+    - A computer program in execution.
+    - A "living" application that is currently running.
+    - The OS will reserve space for processes.
+    - Contains memory and state of the program in execution.
+
+Threads:
+    - Related to a process.
+    - A program unit that is executed independently of other parts of your program.
+    - Every application must have a main thread. You can have sub-threads that split off from the main thread.
+    - A thread shares the memory space of the main process.
+    - A process can create many threads. (Multi-threaded programming)
+    - If you only have one thread running, but more than one core, you're only using that one core (threads are not shared between cores).
+      However, if you can split up your thread into multiple sub-threads, you can utilize your cores more efficiently.
+        - Example: Webpage loading is usually split up as evident by the text loading first, and loading pictures simultaneously in
+          a separate thread.
+
+Process Status (ps):
+    - PID (Processor ID)
+        - Unique identifier of the process itself. No two PIDs are the same.
+    - PPID (Parent Processor ID)
+    - Terminal (CMD = -bash)
+    - ps -e OR ps -A (lists entire list of processes on your OS).
+
+Commands:
+    - ./main& (gives us the PID? of the program, and runs the program)
+    - CTRL + Z (Stops a process, but does not terminate it).
+    - jobs
+    - fg %{jobID} (foreground running)
+    - bg %{jobID} (background running)
+    - kill ${PID}
+
+Fork/Exec:
+    - In UNIX, to do process management, we can do things such as forking ane executing a process.
+    - fork()
+        - Creates a new process that is EXACTLY the same as the parent process (few exceptions like current locking / semaphore state)
+            - Returns a PID to parent of child’s PID (child’s PID == 0)
+    - exec()
+        - Replaces the content of the parent process with another process.
+            - Ex: exec ls –l (replaces bash process with “ls –l” process)
+            - When process finishes, parent process is no longer valid and everything terminates.
+        - Unix commands and applications use the fork / execute process.
+            - Commands such as "ls -l", "pwd", etc.
+        - The PPID is usually the shell that invokes the application or command.
+        - exec command runs a commmand with exec() in the current process space and then terminates.
